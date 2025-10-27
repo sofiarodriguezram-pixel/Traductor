@@ -12,7 +12,7 @@ from googletrans import Translator
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="Traductor de Voz", page_icon="🌐", layout="wide")
 
-# --- CSS MODERNO ---
+# --- CSS ESTILO MODERNO CENTRADO ---
 modern_style = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
@@ -21,18 +21,21 @@ modern_style = """
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a11cb 100%);
     color: white;
     font-family: 'Poppins', sans-serif;
+    text-align: center;
 }
 
 [data-testid="stSidebar"] {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
     color: white;
+    text-align: center;
 }
 
 h1, h2, h3 {
     color: #ffffff !important;
     text-shadow: 1px 1px 6px rgba(0,0,0,0.4);
     font-weight: 600;
+    text-align: center;
 }
 
 .stButton>button {
@@ -41,10 +44,12 @@ h1, h2, h3 {
     border: none;
     border-radius: 12px;
     font-size: 17px;
-    padding: 10px 28px;
+    padding: 12px 30px;
     font-weight: 600;
     transition: 0.3s ease-in-out;
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
+    margin: 10px auto;
+    display: block;
 }
 
 .stButton>button:hover {
@@ -53,13 +58,21 @@ h1, h2, h3 {
 }
 
 div[data-testid="stMarkdownContainer"] {
-    color: #e3e3e3;
+    color: #f0f0f0;
+    text-align: center;
 }
 
 .stAudio {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     padding: 10px;
+}
+
+[data-testid="stVerticalBlock"] {
+    align-items: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 </style>
 """
@@ -72,17 +85,10 @@ st.subheader("Traduce lo que dices en segundos")
 image = Image.open('OIG7.jpg')
 st.image(image, width=300)
 
-with st.sidebar:
-    st.subheader("🎧 Instrucciones")
-    st.write(
-        "Presiona el botón y habla lo que quieras traducir. "
-        "Luego selecciona el idioma de entrada, salida y acento preferido."
-    )
-
-st.write("Haz clic en el botón para empezar a hablar:")
+st.write("🎤 Presiona el botón y habla lo que deseas traducir:")
 
 # --- BOTÓN DE ESCUCHAR ---
-stt_button = Button(label="🎤 Escuchar", width=300, height=50)
+stt_button = Button(label="🎧 Escuchar", width=300, height=50)
 stt_button.js_on_event("button_click", CustomJS(code="""
     var recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
@@ -112,7 +118,7 @@ result = streamlit_bokeh_events(
 )
 
 if result and "GET_TEXT" in result:
-    st.write("🗣️ Texto detectado:")
+    st.markdown("### 🗣️ Texto detectado:")
     st.write(result.get("GET_TEXT"))
 
     try:
@@ -125,9 +131,17 @@ if result and "GET_TEXT" in result:
     translator = Translator()
     text = str(result.get("GET_TEXT"))
 
-    in_lang = st.selectbox("Idioma de entrada", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
-    out_lang = st.selectbox("Idioma de salida", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
-    english_accent = st.selectbox("Acento", ("Defecto", "Español", "Reino Unido", "Estados Unidos", "Canadá", "Australia", "Irlanda", "Sudáfrica"))
+    # --- CENTRAR ELEMENTOS DE SELECCIÓN ---
+    col1, col2 = st.columns(2)
+    with col1:
+        in_lang = st.selectbox("Idioma de entrada", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
+    with col2:
+        out_lang = st.selectbox("Idioma de salida", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
+
+    english_accent = st.selectbox(
+        "🎯 Acento preferido",
+        ("Defecto", "Español", "Reino Unido", "Estados Unidos", "Canadá", "Australia", "Irlanda", "Sudáfrica")
+    )
 
     langs = {"Inglés": "en", "Español": "es", "Bengali": "bn", "Coreano": "ko", "Mandarín": "zh-cn", "Japonés": "ja"}
     accents = {"Defecto": "com", "Español": "com.mx", "Reino Unido": "co.uk", "Estados Unidos": "com",
