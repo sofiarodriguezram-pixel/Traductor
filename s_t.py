@@ -9,39 +9,48 @@ import glob
 from gtts import gTTS
 from googletrans import Translator
 
-# --- CONFIGURACIÓN ESTÉTICA ---
+# --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="Traductor de Voz", page_icon="🎙️", layout="wide")
 
-# CSS personalizado
-page_bg = """
+# --- CSS PERSONALIZADO ---
+page_style = """
 <style>
-body {
-    background: linear-gradient(135deg, #f8ede3, #f9dcc4, #f0b27a);
-    color: #2f2f2f;
+[data-testid="stAppViewContainer"] {
+    background-color: #f4e1c1; /* Fondo café claro */
+    background-image: linear-gradient(to bottom right, #f7e7ce, #f4d6a1, #e6b980);
+    color: #3b2f2f;
     font-family: 'Georgia', serif;
 }
-h1, h2, h3, h4 {
-    color: #4a2c2a;
-    text-shadow: 2px 2px 3px rgba(120, 80, 60, 0.3);
+
+[data-testid="stSidebar"] {
+    background-color: #f3d9b1 !important;
+    color: #3b2f2f;
 }
-.stButton button {
+
+h1, h2, h3 {
+    color: #5a3825 !important;
+    text-shadow: 1px 1px 2px rgba(70, 45, 25, 0.4);
+    font-family: 'Georgia', serif;
+}
+
+.stButton>button {
     background-color: #8b5e3c;
     color: white;
-    border-radius: 12px;
+    border-radius: 10px;
     border: none;
-    font-size: 18px;
-    padding: 10px 24px;
+    font-size: 17px;
+    font-weight: bold;
+    padding: 10px 25px;
     transition: 0.3s;
 }
-.stButton button:hover {
-    background-color: #a67c52;
-}
-.sidebar .sidebar-content {
-    background-color: rgba(255, 250, 240, 0.7);
+
+.stButton>button:hover {
+    background-color: #a1724e;
+    transform: scale(1.05);
 }
 </style>
 """
-st.markdown(page_bg, unsafe_allow_html=True)
+st.markdown(page_style, unsafe_allow_html=True)
 
 # --- INTERFAZ PRINCIPAL ---
 st.title("🎙️ TRADUCTOR")
@@ -100,7 +109,6 @@ if result and "GET_TEXT" in result:
     translator = Translator()
     text = str(result.get("GET_TEXT"))
 
-    # --- Selección de idiomas ---
     in_lang = st.selectbox("Selecciona el lenguaje de Entrada", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
     out_lang = st.selectbox("Selecciona el lenguaje de Salida", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
     english_accent = st.selectbox("Selecciona el acento", ("Defecto", "Español", "Reino Unido", "Estados Unidos", "Canadá", "Australia", "Irlanda", "Sudáfrica"))
@@ -144,7 +152,3 @@ if result and "GET_TEXT" in result:
                     os.remove(f)
 
     remove_files(7)
-
-    
-
-
