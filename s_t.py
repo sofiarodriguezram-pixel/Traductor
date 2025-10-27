@@ -10,63 +10,76 @@ from gtts import gTTS
 from googletrans import Translator
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="Traductor de Voz", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Traductor de Voz", page_icon="🌐", layout="wide")
 
-# --- CSS PERSONALIZADO ---
-page_style = """
+# --- CSS MODERNO ---
+modern_style = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 [data-testid="stAppViewContainer"] {
-    background-color: #f4e1c1; /* Fondo café claro */
-    background-image: linear-gradient(to bottom right, #f7e7ce, #f4d6a1, #e6b980);
-    color: #3b2f2f;
-    font-family: 'Georgia', serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a11cb 100%);
+    color: white;
+    font-family: 'Poppins', sans-serif;
 }
 
 [data-testid="stSidebar"] {
-    background-color: #f3d9b1 !important;
-    color: #3b2f2f;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    color: white;
 }
 
 h1, h2, h3 {
-    color: #5a3825 !important;
-    text-shadow: 1px 1px 2px rgba(70, 45, 25, 0.4);
-    font-family: 'Georgia', serif;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.4);
+    font-weight: 600;
 }
 
 .stButton>button {
-    background-color: #8b5e3c;
+    background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
     color: white;
-    border-radius: 10px;
     border: none;
+    border-radius: 12px;
     font-size: 17px;
-    font-weight: bold;
-    padding: 10px 25px;
-    transition: 0.3s;
+    padding: 10px 28px;
+    font-weight: 600;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
 }
 
 .stButton>button:hover {
-    background-color: #a1724e;
     transform: scale(1.05);
+    background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+}
+
+div[data-testid="stMarkdownContainer"] {
+    color: #e3e3e3;
+}
+
+.stAudio {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px;
 }
 </style>
 """
-st.markdown(page_style, unsafe_allow_html=True)
+st.markdown(modern_style, unsafe_allow_html=True)
 
-# --- INTERFAZ PRINCIPAL ---
-st.title("🎙️ TRADUCTOR")
-st.subheader("Escucho lo que quieres traducir")
+# --- INTERFAZ ---
+st.title("🌐 TRADUCTOR DE VOZ")
+st.subheader("Traduce lo que dices en segundos")
 
 image = Image.open('OIG7.jpg')
 st.image(image, width=300)
 
 with st.sidebar:
-    st.subheader("🗣️ Traductor por voz")
+    st.subheader("🎧 Instrucciones")
     st.write(
-        "Presiona el botón, cuando escuches la señal habla lo que quieres traducir. "
-        "Luego selecciona la configuración de lenguaje que necesites."
+        "Presiona el botón y habla lo que quieras traducir. "
+        "Luego selecciona el idioma de entrada, salida y acento preferido."
     )
 
-st.write("Toca el botón y habla lo que quieres traducir:")
+st.write("Haz clic en el botón para empezar a hablar:")
 
 # --- BOTÓN DE ESCUCHAR ---
 stt_button = Button(label="🎤 Escuchar", width=300, height=50)
@@ -99,19 +112,22 @@ result = streamlit_bokeh_events(
 )
 
 if result and "GET_TEXT" in result:
+    st.write("🗣️ Texto detectado:")
     st.write(result.get("GET_TEXT"))
+
     try:
         os.mkdir("temp")
     except:
         pass
 
-    st.header("Texto a Audio")
+    st.header("🔊 Conversión y Traducción")
+
     translator = Translator()
     text = str(result.get("GET_TEXT"))
 
-    in_lang = st.selectbox("Selecciona el lenguaje de Entrada", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
-    out_lang = st.selectbox("Selecciona el lenguaje de Salida", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
-    english_accent = st.selectbox("Selecciona el acento", ("Defecto", "Español", "Reino Unido", "Estados Unidos", "Canadá", "Australia", "Irlanda", "Sudáfrica"))
+    in_lang = st.selectbox("Idioma de entrada", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
+    out_lang = st.selectbox("Idioma de salida", ("Inglés", "Español", "Bengali", "Coreano", "Mandarín", "Japonés"))
+    english_accent = st.selectbox("Acento", ("Defecto", "Español", "Reino Unido", "Estados Unidos", "Canadá", "Australia", "Irlanda", "Sudáfrica"))
 
     langs = {"Inglés": "en", "Español": "es", "Bengali": "bn", "Coreano": "ko", "Mandarín": "zh-cn", "Japonés": "ja"}
     accents = {"Defecto": "com", "Español": "com.mx", "Reino Unido": "co.uk", "Estados Unidos": "com",
@@ -129,13 +145,13 @@ if result and "GET_TEXT" in result:
         tts.save(f"temp/{my_file_name}.mp3")
         return my_file_name, trans_text
 
-    display_output_text = st.checkbox("Mostrar el texto traducido")
+    display_output_text = st.checkbox("Mostrar texto traducido")
 
-    if st.button("🔊 Convertir"):
+    if st.button("🚀 Convertir a Audio"):
         result, output_text = text_to_speech(input_language, output_language, text, tld)
         audio_file = open(f"temp/{result}.mp3", "rb")
         audio_bytes = audio_file.read()
-        st.markdown("### 🎧 Tu audio generado:")
+        st.markdown("### 🎧 Audio generado:")
         st.audio(audio_bytes, format="audio/mp3", start_time=0)
 
         if display_output_text:
